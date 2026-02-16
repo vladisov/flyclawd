@@ -1,0 +1,61 @@
+{
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${GATEWAY_TOKEN}"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": [],
+      "groupPolicy": "disabled",
+      "streamMode": "partial"
+    }
+  },
+  "agents": {
+    "defaults": {
+      "maxConcurrent": 8,
+      "compaction": { "mode": "safeguard" }
+    },
+    "list": [
+      {
+        "id": "admin",
+        "default": true,
+        "name": "Admin",
+        "workspace": "/root/.openclaw/workspace"
+      }
+    ]
+  },
+  "bindings": [],
+  "commands": { "native": "auto", "nativeSkills": "auto" },
+  "tools": {
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [{ "provider": "openai", "model": "gpt-4o-mini-transcribe" }]
+      }
+    }
+  },
+  "skills": {
+    "install": { "nodeManager": "npm" }
+  },
+  "hooks": {
+    "enabled": true,
+    "token": "${GATEWAY_TOKEN}",
+    "mappings": [
+      {
+        "id": "provision",
+        "match": { "path": "/hooks/provision" },
+        "action": "agent",
+        "agentId": "admin",
+        "messageTemplate": "Provision a new client workspace. Create the directory and files as instructed:\n\n{{body}}\n\nWrite all files exactly as specified. Confirm when done."
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "flyapp",
+  "version": "1.0.0",
+  "description": "Flyapp.so shop management API skill",
+  "commands": [
+    {
+      "name": "orders",
+      "description": "List, create, update orders"
+    },
+    {
+      "name": "products",
+      "description": "List, create, update products"
+    },
+    {
+      "name": "stock",
+      "description": "View inventory, add stock entries"
+    },
+    {
+      "name": "customers",
+      "description": "List customers and their orders"
+    },
+    {
+      "name": "analytics",
+      "description": "View business analytics"
+    },
+    {
+      "name": "delivery",
+      "description": "Manage deliveries"
+    }
+  ]
+}

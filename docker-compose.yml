@@ -1,0 +1,21 @@
+services:
+  openclaw:
+    image: node:22-slim
+    command: >
+      sh -c "npm install -g openclaw && openclaw gateway"
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - openclaw-data:/root/.openclaw
+      - ./config/openclaw.json:/root/.openclaw/openclaw.json:ro
+      - ./config/admin-workspace:/root/.openclaw/workspace
+      - ./skills:/root/.openclaw/skills
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - GATEWAY_TOKEN=${GATEWAY_TOKEN}
+
+volumes:
+  openclaw-data:
+    driver: local
