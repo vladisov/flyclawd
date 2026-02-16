@@ -44,18 +44,5 @@
   },
   "skills": {
     "install": { "nodeManager": "npm" }
-  },
-  "hooks": {
-    "enabled": true,
-    "token": "${GATEWAY_TOKEN}",
-    "mappings": [
-      {
-        "id": "provision",
-        "match": { "path": "/hooks/provision" },
-        "action": "agent",
-        "agentId": "admin",
-        "messageTemplate": "Provision a new client workspace. Create the directory and files as instructed:\n\n{{body}}\n\nWrite all files exactly as specified. Confirm when done."
-      }
-    ]
   }
 }
