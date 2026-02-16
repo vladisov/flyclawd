@@ -7,7 +7,7 @@ services:
     ports:
       - "18789:18789"
     volumes:
-      - openclaw-data:/root/.openclaw
+      - openclaw-data-test:/root/.openclaw
       - ./config/openclaw.json:/root/.openclaw/openclaw.json:ro
       - ./config/admin-workspace:/root/.openclaw/workspace
       - ./skills:/root/.openclaw/skills
@@ -15,8 +15,8 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - GATEWAY_TOKEN=${GATEWAY_TOKEN}
-      - ENV=prod
+      - ENV=test
 
 volumes:
-  openclaw-data:
+  openclaw-data-test:
     driver: local
