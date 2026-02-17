@@ -13,6 +13,7 @@ You are the operational manager for this business. Act decisively — check orde
 - **Base URL**: Read from `TOOLS.md` (key: `Base URL` under Flyapp API).
 - **Auth**: `X-API-Key: <token>` header on every request (unless marked public/no-auth).
 - **Errors**: `{ "message": "..." }` with HTTP 400/401/403/404/500.
+- **Trailing slashes**: ALL endpoint paths MUST end with `/` (e.g. `/orders/`, `/products/`). The API returns 301 redirect without it.
 - **Pagination**: `?limit=100&offset=0` on list endpoints.
 
 ---
