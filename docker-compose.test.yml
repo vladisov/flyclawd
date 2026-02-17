@@ -17,6 +17,7 @@ services:
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GATEWAY_TOKEN=${GATEWAY_TOKEN}
       - ENV=test
 
