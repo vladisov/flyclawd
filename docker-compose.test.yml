@@ -2,13 +2,16 @@ services:
   openclaw:
     image: node:22-slim
     command: >
-      sh -c "apt-get update && apt-get install -y git && npm install -g openclaw && openclaw gateway"
+      sh -c "apt-get update && apt-get install -y git &&
+        npm install -g openclaw &&
+        cp /config-source/openclaw.json /root/.openclaw/openclaw.json &&
+        openclaw gateway"
     restart: unless-stopped
     ports:
       - "18789:18789"
     volumes:
       - openclaw-data-test:/root/.openclaw
-      - ./config/openclaw.json:/root/.openclaw/openclaw.json
+      - ./config/openclaw.json:/config-source/openclaw.json:ro
       - ./config/admin-workspace:/root/.openclaw/workspace
       - ./skills:/root/.openclaw/skills
     environment:
