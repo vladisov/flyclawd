@@ -6,10 +6,6 @@
     "auth": {
       "mode": "token",
       "token": "${GATEWAY_TOKEN}"
-    },
-    "controlUi": {
-      "allowInsecureAuth": true,
-      "dangerouslyDisableDeviceAuth": true
     }
   },
   "channels": {
@@ -32,7 +28,8 @@
         "id": "admin",
         "default": true,
         "name": "Admin",
-        "workspace": "/root/.openclaw/workspace"
+        "workspace": "/root/.openclaw/workspace",
+        "tools": { "profile": "full" }
       }
     ]
   },
