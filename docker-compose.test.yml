@@ -4,7 +4,7 @@ services:
     command: >
       sh -c "apt-get update && apt-get install -y git &&
         npm install -g openclaw &&
-        cp /config-source/openclaw.json /root/.openclaw/openclaw.json &&
+        [ -f /root/.openclaw/openclaw.json ] || cp /config-source/openclaw.json /root/.openclaw/openclaw.json &&
         openclaw gateway"
     restart: unless-stopped
     ports:
