@@ -50,6 +50,12 @@
       }
     }
   },
+  "messages": {
+    "tts": {
+      "auto": "inbound",
+      "provider": "edge"
+    }
+  },
   "skills": {
     "install": { "nodeManager": "npm" }
   }
