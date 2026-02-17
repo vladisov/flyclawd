@@ -29,7 +29,10 @@
         "default": true,
         "name": "Admin",
         "workspace": "/root/.openclaw/workspace",
-        "tools": { "profile": "full" }
+        "tools": {
+          "profile": "coding",
+          "allow": ["read", "write", "exec", "web_fetch"]
+        }
       }
     ]
   },
