@@ -6,6 +6,9 @@
     "auth": {
       "mode": "token",
       "token": "${GATEWAY_TOKEN}"
+    },
+    "tools": {
+      "allow": ["gateway"]
     }
   },
   "channels": {
@@ -28,16 +31,17 @@
         "id": "admin",
         "default": true,
         "name": "Admin",
-        "workspace": "/root/.openclaw/workspace",
-        "tools": {
-          "profile": "coding",
-          "allow": ["read", "write", "exec", "web_fetch"]
-        }
+        "workspace": "/root/.openclaw/workspace"
       }
     ]
   },
   "bindings": [],
   "commands": { "native": "auto", "nativeSkills": "auto" },
+  "hooks": {
+    "enabled": true,
+    "token": "${GATEWAY_TOKEN}",
+    "allowedAgentIds": ["admin"]
+  },
   "tools": {
     "media": {
       "audio": {
