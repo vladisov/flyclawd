@@ -7,8 +7,7 @@ services:
         [ -f /root/.openclaw/openclaw.json ] || cp /config-source/openclaw.json /root/.openclaw/openclaw.json &&
         openclaw gateway"
     restart: unless-stopped
-    ports:
-      - "18789:18789"
+    network_mode: host
     volumes:
       - openclaw-data-test:/root/.openclaw
       - ./config/openclaw.json:/config-source/openclaw.json:ro
