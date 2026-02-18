@@ -81,6 +81,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
             "defaults": {
                 "workspace": "/root/.picoclaw/workspace",
                 "restrict_to_workspace": False,
+                "provider": "deepseek",
                 "model": "deepseek-chat",
                 "max_tokens": 8192,
                 "temperature": 0.7,
@@ -88,11 +89,8 @@ def _build_config(req: CreateContainerRequest) -> dict:
             }
         },
         "providers": {
-            "openai": {
-                "apiKey": DEEPSEEK_API_KEY,
-                "apiBase": "https://api.deepseek.com",
-            },
-            "groq": {"apiKey": GROQ_API_KEY},
+            "deepseek": {"api_key": DEEPSEEK_API_KEY},
+            "groq": {"api_key": GROQ_API_KEY},
         },
         "channels": {
             "telegram": {
