@@ -182,8 +182,10 @@ async def create_container(req: CreateContainerRequest):
     except docker.errors.NotFound:
         pass
 
-    # Prepare host directories
+    # Wipe and recreate host directories (clears old session state)
     container_dir = DATA_DIR / name
+    if container_dir.exists():
+        shutil.rmtree(container_dir)
     config_dir = container_dir / "config"
     workspace_dir = container_dir / "workspace"
     config_dir.mkdir(parents=True, exist_ok=True)
