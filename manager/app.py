@@ -13,8 +13,11 @@ logger = logging.getLogger(__name__)
 
 PICOCLAW_IMAGE = os.environ.get("PICOCLAW_IMAGE", "sipeed/picoclaw:latest")
 NETWORK_NAME = "picoclaw-net"
+# Paths inside manager container (for reading/writing config)
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/picoclaw/data"))
-SHARED_SKILLS_DIR = os.environ.get("SHARED_SKILLS_DIR", "/opt/picoclaw/shared/skills")
+# Host paths (for Docker volume mounts — manager talks to host Docker socket)
+HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
+HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
 
@@ -184,15 +187,15 @@ async def create_container(req: CreateContainerRequest):
         restart_policy={"Name": "unless-stopped"},
         network=NETWORK_NAME,
         volumes={
-            str(config_dir / "config.json"): {
+            f"{HOST_DATA_DIR}/{name}/config/config.json": {
                 "bind": "/root/.picoclaw/config.json",
                 "mode": "ro",
             },
-            str(workspace_dir): {
+            f"{HOST_DATA_DIR}/{name}/workspace": {
                 "bind": "/root/.picoclaw/workspace",
                 "mode": "rw",
             },
-            SHARED_SKILLS_DIR: {
+            HOST_SKILLS_DIR: {
                 "bind": "/root/.picoclaw/skills",
                 "mode": "ro",
             },

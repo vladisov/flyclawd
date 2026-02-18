@@ -6,11 +6,13 @@ services:
       - "8100:8100"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/picoclaw/data:/opt/picoclaw/data
-      - /opt/picoclaw/shared:/opt/picoclaw/shared:ro
+      - ${PICOCLAW_DATA_DIR:-/opt/picoclaw/data}:/opt/picoclaw/data
+      - ./skills:/opt/picoclaw/shared/skills:ro
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - MANAGER_TOKEN=${MANAGER_TOKEN}
+      - HOST_DATA_DIR=${PICOCLAW_DATA_DIR:-/opt/picoclaw/data}
+      - HOST_SKILLS_DIR=${HOST_SKILLS_DIR:-/home/ec2-user/flyclawd/skills}
     networks:
       - picoclaw-net
 
