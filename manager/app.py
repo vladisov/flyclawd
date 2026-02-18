@@ -181,7 +181,7 @@ async def create_container(req: CreateContainerRequest):
     # Run container
     container = client.containers.run(
         PICOCLAW_IMAGE,
-        command="picoclaw gateway",
+        command="gateway",
         name=name,
         detach=True,
         restart_policy={"Name": "unless-stopped"},
