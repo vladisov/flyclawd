@@ -91,8 +91,8 @@ def _build_config(req: CreateContainerRequest) -> dict:
         "channels": {
             "telegram": {
                 "enabled": True,
-                "bot_token": req.telegram_bot_token,
-                "allow_from": [req.telegram_user_id],
+                "token": req.telegram_bot_token,
+                "allowFrom": [req.telegram_user_id],
             }
         },
         "tools": {
