@@ -86,7 +86,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
             }
         },
         "providers": {
-            "anthropic": {"api_key": "${ANTHROPIC_API_KEY}"},
+            "anthropic": {"api_key": ANTHROPIC_API_KEY},
         },
         "channels": {
             "telegram": {
