@@ -20,6 +20,7 @@ HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
 HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
 SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/picoclaw/shared/skills"))
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
 
 
@@ -88,6 +89,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
         },
         "providers": {
             "anthropic": {"api_key": ANTHROPIC_API_KEY},
+            "groq": {"api_key": GROQ_API_KEY},
         },
         "channels": {
             "telegram": {
