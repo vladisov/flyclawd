@@ -89,10 +89,10 @@ def _build_config(req: CreateContainerRequest) -> dict:
         },
         "providers": {
             "openai": {
-                "api_key": DEEPSEEK_API_KEY,
-                "api_base": "https://api.deepseek.com",
+                "apiKey": DEEPSEEK_API_KEY,
+                "apiBase": "https://api.deepseek.com",
             },
-            "groq": {"api_key": GROQ_API_KEY},
+            "groq": {"apiKey": GROQ_API_KEY},
         },
         "channels": {
             "telegram": {
