@@ -126,8 +126,8 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
 
     skill_content = _load_skill_content()
 
-    # Put EVERYTHING in SOUL.md — persona, rules, credentials, full API ref.
-    # This is the most reliable way to get content into agent context.
+    skill_content = _load_skill_content()
+
     soul = (
         f"You are the shop manager for **{req.business_name}**.\n"
         f"You talk to the shop owner and their staff (florists, drivers, etc).\n\n"
@@ -144,18 +144,11 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Only discuss {req.business_name} operations\n\n"
         f"## API (internal — never expose to user)\n"
         f"- Key: `{req.api_key}`\n"
-        f"- Base: `{req.flyapp_api_url}`\n"
-        f"- Before your first API call, read `API.md` for endpoints and wget syntax\n"
-        f"- ALWAYS pipe large responses: `| head -c 3000` to keep context small\n"
-        f"- Use `limit=25` on list endpoints, never fetch more\n"
+        f"- Base: `{req.flyapp_api_url}`\n\n"
+        f"{skill_content}\n"
     )
 
     (workspace_dir / "SOUL.md").write_text(soul)
-
-    # API reference in separate file — agent reads on demand
-    api_ref = _load_skill_content()
-    if api_ref:
-        (workspace_dir / "API.md").write_text(api_ref)
 
 
 # --- Endpoints ---

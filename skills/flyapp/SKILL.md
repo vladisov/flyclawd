@@ -12,7 +12,6 @@ Auth: `X-API-Key: <token>` header. ALL paths end with `/`.
 GET: `wget --header="X-API-Key: TOKEN" -qO- "URL"`
 POST: `wget --header="X-API-Key: TOKEN" --header="Content-Type: application/json" --post-data='{"key":"val"}' -qO- "URL"`
 Only these flags work: `--header`, `--post-data`, `-q`, `-O-`. No `--method`, no `--body-data`.
-**CRITICAL**: Pipe large responses through `| head -c 3000` to avoid memory issues.
 
 ## Orders
 - `GET /orders/?status={pending|ready|done|all}&limit=25` → list (always use limit=25, use offset for paging)
