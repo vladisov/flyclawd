@@ -1,22 +1,20 @@
 services:
-  openclaw:
-    image: node:22-slim
-    command: >
-      sh -c "apt-get update && apt-get install -y git && npm install -g openclaw && openclaw gateway"
+  manager:
+    build: ./manager
     restart: unless-stopped
     ports:
-      - "18789:18789"
+      - "8100:8100"
     volumes:
-      - openclaw-data:/root/.openclaw
-      - ./config/openclaw.json:/root/.openclaw/openclaw.json
-      - ./config/admin-workspace:/root/.openclaw/workspace
-      - ./skills:/root/.openclaw/skills
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/picoclaw/data:/opt/picoclaw/data
+      - /opt/picoclaw/shared:/opt/picoclaw/shared:ro
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - GATEWAY_TOKEN=${GATEWAY_TOKEN}
-      - ENV=prod
+      - MANAGER_TOKEN=${MANAGER_TOKEN}
+    networks:
+      - picoclaw-net
 
-volumes:
-  openclaw-data:
-    driver: local
+networks:
+  picoclaw-net:
+    name: picoclaw-net
+    driver: bridge
