@@ -19,8 +19,9 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/picoclaw/data"))
 HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
 HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
 SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/picoclaw/shared/skills"))
-ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
 
 
@@ -81,14 +82,14 @@ def _build_config(req: CreateContainerRequest) -> dict:
             "defaults": {
                 "workspace": "/root/.picoclaw/workspace",
                 "restrict_to_workspace": False,
-                "model": "claude-haiku-4-5",
+                "model": "gemini-2.0-flash",
                 "max_tokens": 8192,
                 "temperature": 0.7,
                 "max_tool_iterations": 8,
             }
         },
         "providers": {
-            "anthropic": {"api_key": ANTHROPIC_API_KEY},
+            "gemini": {"api_key": GEMINI_API_KEY},
             "groq": {"api_key": GROQ_API_KEY},
         },
         "channels": {
