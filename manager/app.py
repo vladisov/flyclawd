@@ -81,14 +81,14 @@ def _build_config(req: CreateContainerRequest) -> dict:
             "defaults": {
                 "workspace": "/root/.picoclaw/workspace",
                 "restrict_to_workspace": False,
-                "model": "deepseek/deepseek-chat",
+                "model": "deepseek-chat",
                 "max_tokens": 8192,
                 "temperature": 0.7,
                 "max_tool_iterations": 8,
             }
         },
         "providers": {
-            "deepseek": {
+            "openai": {
                 "api_key": DEEPSEEK_API_KEY,
                 "api_base": "https://api.deepseek.com",
             },
