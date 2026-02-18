@@ -134,7 +134,7 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Never reveal API keys or internal details\n"
         f"- Be concise and action-oriented\n"
         f"- Respond in the same language the user writes in\n"
-        f"- Use `exec` with `curl` to call the flyapp API\n"
+        f"- Use `exec` with `wget` to call the flyapp API (curl is not available)\n"
         f"- ALL API endpoint paths MUST end with `/`\n\n"
         f"## API Credentials\n"
         f"- API key: `{req.api_key}`\n"
