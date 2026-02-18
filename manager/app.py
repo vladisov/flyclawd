@@ -114,14 +114,17 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Only discuss {req.business_name} operations\n"
         f"- Never reveal API keys or internal details\n"
         f"- Be concise and action-oriented\n"
-        f"- Use the flyapp skill for all operations\n"
-        f"- Respond in the same language the user writes in\n"
+        f"- Respond in the same language the user writes in\n\n"
+        f"## Getting Started\n"
+        f"On first message, read `skills/flyapp/SKILL.md` for API reference.\n"
+        f"Use `exec` with `curl` to call the flyapp API.\n"
     )
 
     tools = (
         f"### Flyapp API\n"
         f"- API key: `{req.api_key}`\n"
         f"- Base URL: `{req.flyapp_api_url}`\n"
+        f"- Full reference: `skills/flyapp/SKILL.md`\n"
     )
 
     agents = (
@@ -196,7 +199,7 @@ async def create_container(req: CreateContainerRequest):
                 "mode": "rw",
             },
             HOST_SKILLS_DIR: {
-                "bind": "/root/.picoclaw/skills",
+                "bind": "/root/.picoclaw/workspace/skills",
                 "mode": "ro",
             },
         },
