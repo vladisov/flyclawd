@@ -146,6 +146,8 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Key: `{req.api_key}`\n"
         f"- Base: `{req.flyapp_api_url}`\n"
         f"- Before your first API call, read `API.md` for endpoints and wget syntax\n"
+        f"- ALWAYS pipe large responses: `| head -c 3000` to keep context small\n"
+        f"- Use `limit=10` on list endpoints, never fetch more\n"
     )
 
     (workspace_dir / "SOUL.md").write_text(soul)

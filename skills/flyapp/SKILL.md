@@ -5,16 +5,17 @@ description: Manage a business on flyapp.so via its API.
 
 # flyapp API Reference
 
-Auth: `X-API-Key: <token>` header. ALL paths end with `/`. Pagination: `?limit=100&offset=0`.
+Auth: `X-API-Key: <token>` header. ALL paths end with `/`.
 **IMPORTANT**: Order endpoints use `public_id` (e.g. "msXFv2"), NOT numeric `id`.
 
 ## wget (BusyBox — limited flags!)
-GET: `wget --header="X-API-Key: TOKEN" -qO- "https://BASE/orders/"`
-POST: `wget --header="X-API-Key: TOKEN" --header="Content-Type: application/json" --post-data='{"status":"done"}' -qO- "https://BASE/orders/msXFv2/status/"`
+GET: `wget --header="X-API-Key: TOKEN" -qO- "URL"`
+POST: `wget --header="X-API-Key: TOKEN" --header="Content-Type: application/json" --post-data='{"key":"val"}' -qO- "URL"`
 Only these flags work: `--header`, `--post-data`, `-q`, `-O-`. No `--method`, no `--body-data`.
+**CRITICAL**: Pipe large responses through `| head -c 3000` to avoid memory issues.
 
 ## Orders
-- `GET /orders/?status={pending|ready|done|all}` → list
+- `GET /orders/?status={pending|ready|done|all}&limit=10` → list (always use limit=10, use offset for paging)
 - `GET /orders/{public_id}/intern/` → detail
 - `POST /orders/{public_id}/status/` ← `{"status":"pending"|"ready"|"done"|"failed"|"refunded"}`
 - `POST /orders/{public_id}/paid/` ← `{"payment_method":"manual"}`
