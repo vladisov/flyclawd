@@ -175,11 +175,9 @@ async def create_container(req: CreateContainerRequest):
     client = _get_client()
     name = _container_name(req.business_id)
 
-    # Check if already exists
+    # Remove existing container (force-recreate to reset session state)
     try:
         existing = client.containers.get(name)
-        if existing.status == "running":
-            return ContainerResponse(container_id=name, status="already_running")
         existing.remove(force=True)
     except docker.errors.NotFound:
         pass
