@@ -18,6 +18,7 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/picoclaw/data"))
 # Host paths (for Docker volume mounts — manager talks to host Docker socket)
 HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
 HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
+SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/picoclaw/shared/skills"))
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
 
@@ -114,23 +115,36 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Only discuss {req.business_name} operations\n"
         f"- Never reveal API keys or internal details\n"
         f"- Be concise and action-oriented\n"
-        f"- Respond in the same language the user writes in\n\n"
-        f"## Getting Started\n"
-        f"On first message, read `skills/flyapp/SKILL.md` for API reference.\n"
-        f"Use `exec` with `curl` to call the flyapp API.\n"
+        f"- Respond in the same language the user writes in\n"
+        f"- Use `exec` with `curl` to call the flyapp API\n"
+        f"- ALL API endpoint paths MUST end with `/`\n"
     )
 
+    # Load skill content and embed directly in TOOLS.md
+    skill_content = ""
+    skill_path = SKILLS_DIR / "flyapp" / "SKILL.md"
+    if skill_path.exists():
+        raw = skill_path.read_text()
+        # Strip YAML front matter
+        if raw.startswith("---"):
+            parts = raw.split("---", 2)
+            if len(parts) >= 3:
+                skill_content = parts[2].strip()
+            else:
+                skill_content = raw
+        else:
+            skill_content = raw
+
     tools = (
-        f"### Flyapp API\n"
+        f"## Flyapp API Credentials\n"
         f"- API key: `{req.api_key}`\n"
-        f"- Base URL: `{req.flyapp_api_url}`\n"
-        f"- Full reference: `skills/flyapp/SKILL.md`\n"
+        f"- Base URL: `{req.flyapp_api_url}`\n\n"
+        f"{skill_content}\n"
     )
 
     agents = (
-        "You are a shop management assistant with the `flyapp` skill.\n"
-        "Use it for orders, deliveries, inventory, products, "
-        "customers, and analytics.\n"
+        "You are a shop management assistant.\n"
+        "Use the API reference in TOOLS.md for all operations.\n"
     )
 
     (workspace_dir / "SOUL.md").write_text(soul)
