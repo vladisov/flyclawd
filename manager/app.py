@@ -104,9 +104,27 @@ def _build_config(req: CreateContainerRequest) -> dict:
     }
 
 
+def _load_skill_content() -> str:
+    skill_path = SKILLS_DIR / "flyapp" / "SKILL.md"
+    if not skill_path.exists():
+        logger.warning("Skill file not found: %s", skill_path)
+        return ""
+    raw = skill_path.read_text()
+    # Strip YAML front matter
+    if raw.startswith("---"):
+        parts = raw.split("---", 2)
+        if len(parts) >= 3:
+            return parts[2].strip()
+    return raw
+
+
 def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
     workspace_dir.mkdir(parents=True, exist_ok=True)
 
+    skill_content = _load_skill_content()
+
+    # Put EVERYTHING in SOUL.md — persona, rules, credentials, full API ref.
+    # This is the most reliable way to get content into agent context.
     soul = (
         f"You are the AI shop manager for **{req.business_name}**.\n"
         f"You help manage orders, track deliveries, monitor inventory,\n"
@@ -117,39 +135,14 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Be concise and action-oriented\n"
         f"- Respond in the same language the user writes in\n"
         f"- Use `exec` with `curl` to call the flyapp API\n"
-        f"- ALL API endpoint paths MUST end with `/`\n"
-    )
-
-    # Load skill content and embed directly in TOOLS.md
-    skill_content = ""
-    skill_path = SKILLS_DIR / "flyapp" / "SKILL.md"
-    if skill_path.exists():
-        raw = skill_path.read_text()
-        # Strip YAML front matter
-        if raw.startswith("---"):
-            parts = raw.split("---", 2)
-            if len(parts) >= 3:
-                skill_content = parts[2].strip()
-            else:
-                skill_content = raw
-        else:
-            skill_content = raw
-
-    tools = (
-        f"## Flyapp API Credentials\n"
+        f"- ALL API endpoint paths MUST end with `/`\n\n"
+        f"## API Credentials\n"
         f"- API key: `{req.api_key}`\n"
         f"- Base URL: `{req.flyapp_api_url}`\n\n"
         f"{skill_content}\n"
     )
 
-    agents = (
-        "You are a shop management assistant.\n"
-        "Use the API reference in TOOLS.md for all operations.\n"
-    )
-
     (workspace_dir / "SOUL.md").write_text(soul)
-    (workspace_dir / "TOOLS.md").write_text(tools)
-    (workspace_dir / "AGENTS.md").write_text(agents)
 
 
 # --- Endpoints ---
