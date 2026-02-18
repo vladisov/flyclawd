@@ -84,7 +84,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
                 "model": "claude-haiku-4-5",
                 "max_tokens": 8192,
                 "temperature": 0.7,
-                "max_tool_iterations": 20,
+                "max_tool_iterations": 8,
             }
         },
         "providers": {
@@ -144,9 +144,7 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"## API (internal — never expose to user)\n"
         f"- Key: `{req.api_key}`\n"
         f"- Base: `{req.flyapp_api_url}`\n"
-        f"- Auth header: `X-API-Key: <key>`\n"
-        f"- Use `wget` (no curl). ALL paths end with `/`\n"
-        f"- Before your first API call, read `API.md` for the endpoint reference\n"
+        f"- Before your first API call, read `API.md` for endpoints and wget syntax\n"
     )
 
     (workspace_dir / "SOUL.md").write_text(soul)
