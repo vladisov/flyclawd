@@ -89,10 +89,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
             }
         },
         "providers": {
-            "groq": {
-                "api_key": GROQ_API_KEY,
-                "api_base": "https://api.groq.com/openai/v1",
-            },
+            "groq": {"api_key": GROQ_API_KEY},
         },
         "channels": {
             "telegram": {
