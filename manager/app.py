@@ -223,7 +223,7 @@ async def create_container(req: CreateContainerRequest):
                 "mode": "ro",
             },
         },
-        environment={"ANTHROPIC_API_KEY": ANTHROPIC_API_KEY},
+        environment={},
         mem_limit="512m",
         labels={"managed-by": "flyclawd", "business-id": str(req.business_id)},
     )
