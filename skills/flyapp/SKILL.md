@@ -15,7 +15,7 @@ Only these flags work: `--header`, `--post-data`, `-q`, `-O-`. No `--method`, no
 **CRITICAL**: Pipe large responses through `| head -c 3000` to avoid memory issues.
 
 ## Orders
-- `GET /orders/?status={pending|ready|done|all}&limit=10` → list (always use limit=10, use offset for paging)
+- `GET /orders/?status={pending|ready|done|all}&limit=25` → list (always use limit=25, use offset for paging)
 - `GET /orders/{public_id}/intern/` → detail
 - `POST /orders/{public_id}/status/` ← `{"status":"pending"|"ready"|"done"|"failed"|"refunded"}`
 - `POST /orders/{public_id}/paid/` ← `{"payment_method":"manual"}`
