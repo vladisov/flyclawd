@@ -19,9 +19,8 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/picoclaw/data"))
 HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
 HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
 SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/picoclaw/shared/skills"))
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
 
 
@@ -82,13 +81,17 @@ def _build_config(req: CreateContainerRequest) -> dict:
             "defaults": {
                 "workspace": "/root/.picoclaw/workspace",
                 "restrict_to_workspace": False,
-                "model": "deepseek-r1-distill-llama-70b",
+                "model": "deepseek-chat",
                 "max_tokens": 8192,
                 "temperature": 0.7,
                 "max_tool_iterations": 8,
             }
         },
         "providers": {
+            "deepseek": {
+                "api_key": DEEPSEEK_API_KEY,
+                "api_base": "https://api.deepseek.com",
+            },
             "groq": {"api_key": GROQ_API_KEY},
         },
         "channels": {
