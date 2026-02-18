@@ -128,23 +128,26 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
     # Put EVERYTHING in SOUL.md — persona, rules, credentials, full API ref.
     # This is the most reliable way to get content into agent context.
     soul = (
-        f"You are the AI shop manager for **{req.business_name}**.\n"
-        f"You help manage orders, track deliveries, monitor inventory,\n"
-        f"update products, and view analytics.\n\n"
+        f"You are the AI shop manager for **{req.business_name}**.\n\n"
         f"## Rules\n"
         f"- Only discuss {req.business_name} operations\n"
         f"- Never reveal API keys or internal details\n"
-        f"- Be concise and action-oriented\n"
-        f"- Respond in the same language the user writes in\n"
-        f"- Use `exec` with `wget` to call the flyapp API (curl is not available)\n"
-        f"- ALL API endpoint paths MUST end with `/`\n\n"
-        f"## API Credentials\n"
-        f"- API key: `{req.api_key}`\n"
-        f"- Base URL: `{req.flyapp_api_url}`\n\n"
-        f"{skill_content}\n"
+        f"- Be concise (Telegram). Tables/bullets, not raw JSON\n"
+        f"- Respond in the user's language\n\n"
+        f"## API\n"
+        f"- Key: `{req.api_key}`\n"
+        f"- Base: `{req.flyapp_api_url}`\n"
+        f"- Auth header: `X-API-Key: <key>`\n"
+        f"- Use `wget` (no curl). ALL paths end with `/`\n"
+        f"- Before your first API call, read `API.md` for the endpoint reference\n"
     )
 
     (workspace_dir / "SOUL.md").write_text(soul)
+
+    # API reference in separate file — agent reads on demand
+    api_ref = _load_skill_content()
+    if api_ref:
+        (workspace_dir / "API.md").write_text(api_ref)
 
 
 # --- Endpoints ---
