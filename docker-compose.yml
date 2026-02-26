@@ -1,4 +1,9 @@
 services:
+  openclaw-image:
+    build: ${OPENCLAW_REPO_PATH:-../openclaw}
+    image: openclaw:latest
+    profiles: ["build"]
+
   manager:
     build: ./manager
     restart: unless-stopped

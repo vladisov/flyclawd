@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 import docker
@@ -173,7 +174,7 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
     (workspace_dir / "TOOLS.md").write_text(tools)
 
     # Set ownership to node user (UID 1000) — OpenClaw runs as node
-    os.system(f"chown -R 1000:1000 {workspace_dir}")
+    subprocess.run(["chown", "-R", "1000:1000", str(workspace_dir)], check=False)
 
 
 # --- Endpoints ---
@@ -236,7 +237,6 @@ async def create_container(req: CreateContainerRequest):
                 "mode": "rw",
             },
         },
-        environment={},
         mem_limit="512m",
         labels={"managed-by": "flyclawd", "business-id": str(req.business_id)},
     )
