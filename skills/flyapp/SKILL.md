@@ -8,11 +8,6 @@ description: Manage a business on flyapp.so via its API.
 Auth: `X-API-Key: <token>` header. ALL paths end with `/`.
 **IMPORTANT**: Order endpoints use `public_id` (e.g. "msXFv2"), NOT numeric `id`.
 
-## wget (BusyBox — limited flags!)
-GET: `wget --header="X-API-Key: TOKEN" -qO- "URL"`
-POST: `wget --header="X-API-Key: TOKEN" --header="Content-Type: application/json" --post-data='{"key":"val"}' -qO- "URL"`
-Only these flags work: `--header`, `--post-data`, `-q`, `-O-`. No `--method`, no `--body-data`.
-
 ## Orders
 - `GET /orders/?status={pending|ready|done|all}&limit=25` → list (always use limit=25, use offset for paging)
 - `GET /orders/{public_id}/intern/` → detail

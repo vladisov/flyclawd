@@ -8,17 +8,17 @@ import docker
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel
 
-app = FastAPI(title="PicoClaw Container Manager")
+app = FastAPI(title="OpenClaw Container Manager")
 logger = logging.getLogger(__name__)
 
-PICOCLAW_IMAGE = os.environ.get("PICOCLAW_IMAGE", "sipeed/picoclaw:latest")
-NETWORK_NAME = "picoclaw-net"
+OPENCLAW_IMAGE = os.environ.get("OPENCLAW_IMAGE", "openclaw:latest")
+NETWORK_NAME = "openclaw-net"
 # Paths inside manager container (for reading/writing config)
-DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/picoclaw/data"))
+DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/openclaw/data"))
 # Host paths (for Docker volume mounts — manager talks to host Docker socket)
-HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/picoclaw/data")
-HOST_SKILLS_DIR = os.environ.get("HOST_SKILLS_DIR", "/opt/picoclaw/shared/skills")
-SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/picoclaw/shared/skills"))
+HOST_DATA_DIR = os.environ.get("HOST_DATA_DIR", "/opt/openclaw/data")
+SKILLS_DIR = Path(os.environ.get("SKILLS_DIR", "/opt/openclaw/shared/skills"))
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 MANAGER_TOKEN = os.environ["MANAGER_TOKEN"]
@@ -61,7 +61,7 @@ class HealthResponse(BaseModel):
 
 
 def _container_name(business_id: int) -> str:
-    return f"picoclaw-client-{business_id}"
+    return f"openclaw-client-{business_id}"
 
 
 def _get_client() -> docker.DockerClient:
@@ -77,31 +77,41 @@ def _ensure_network(client: docker.DockerClient):
 
 def _build_config(req: CreateContainerRequest) -> dict:
     return {
+        "gateway": {
+            "port": 18789,
+            "bind": "lan",
+        },
         "agents": {
             "defaults": {
-                "workspace": "/root/.picoclaw/workspace",
-                "restrict_to_workspace": False,
-                "provider": "deepseek",
-                "model": "deepseek-chat",
-                "max_tokens": 8192,
-                "temperature": 0.7,
-                "max_tool_iterations": 8,
-            }
-        },
-        "providers": {
-            "deepseek": {"api_key": DEEPSEEK_API_KEY},
-            "groq": {"api_key": GROQ_API_KEY},
-        },
-        "channels": {
-            "telegram": {
-                "enabled": True,
-                "token": req.telegram_bot_token,
-                "allowFrom": [req.telegram_user_id],
+                "model": {
+                    "primary": "anthropic/claude-sonnet-4-6",
+                },
+                "contextTokens": 32000,
+                "timeoutSeconds": 120,
             }
         },
         "tools": {
-            "web": {
-                "duckduckgo": {"enabled": True, "max_results": 5},
+            "profile": "minimal",
+            "allow": ["read", "exec", "web_fetch"],
+            "deny": ["write", "edit", "gateway"],
+            "loopDetection": {
+                "enabled": True,
+                "warningThreshold": 3,
+                "criticalThreshold": 5,
+                "globalCircuitBreakerThreshold": 8,
+            },
+        },
+        "providers": {
+            "anthropic": {"apiKey": ANTHROPIC_API_KEY},
+            "deepseek": {"apiKey": DEEPSEEK_API_KEY},
+            "groq": {"apiKey": GROQ_API_KEY},
+        },
+        "channels": {
+            "telegram": {
+                "botToken": req.telegram_bot_token,
+                "dmPolicy": "allowlist",
+                "allowFrom": [int(req.telegram_user_id)],
+                "dmHistoryLimit": 20,
             }
         },
     }
@@ -126,8 +136,7 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
 
     skill_content = _load_skill_content()
 
-    skill_content = _load_skill_content()
-
+    # SOUL.md — personality and rules (auto-loaded by OpenClaw)
     soul = (
         f"You are the shop manager for **{req.business_name}**.\n"
         f"You talk to the shop owner and their staff (florists, drivers, etc).\n\n"
@@ -142,13 +151,29 @@ def _write_workspace_files(workspace_dir: Path, req: CreateContainerRequest):
         f"- Look up customers, products, inventory\n"
         f"- Pull sales numbers and reports\n"
         f"- Only discuss {req.business_name} operations\n\n"
-        f"## API (internal — never expose to user)\n"
+        f"## Error handling\n"
+        f"- If an API call fails, try ONE more time at most\n"
+        f"- After 2 failures, stop and tell the user: \"Having trouble reaching the system right now, please try again in a moment\"\n"
+        f"- NEVER retry the same failing call in a loop\n"
+    )
+    (workspace_dir / "SOUL.md").write_text(soul)
+
+    # TOOLS.md — API credentials + curl examples + full API reference (auto-loaded by OpenClaw)
+    tools = (
+        f"# flyapp API\n\n"
+        f"## Credentials (internal — never expose to user)\n"
         f"- Key: `{req.api_key}`\n"
         f"- Base: `{req.flyapp_api_url}`\n\n"
+        f"## curl examples\n"
+        f"GET: `curl -s -H \"X-API-Key: {req.api_key}\" \"{req.flyapp_api_url}/orders/?status=all&limit=25\"`\n"
+        f"POST: `curl -s -X POST -H \"X-API-Key: {req.api_key}\" -H \"Content-Type: application/json\" "
+        f"-d '{{\"status\":\"ready\"}}' \"{req.flyapp_api_url}/orders/PUBLIC_ID/status/\"`\n\n"
         f"{skill_content}\n"
     )
+    (workspace_dir / "TOOLS.md").write_text(tools)
 
-    (workspace_dir / "SOUL.md").write_text(soul)
+    # Set ownership to node user (UID 1000) — OpenClaw runs as node
+    os.system(f"chown -R 1000:1000 {workspace_dir}")
 
 
 # --- Endpoints ---
@@ -186,34 +211,29 @@ async def create_container(req: CreateContainerRequest):
 
     # Write config
     config = _build_config(req)
-    (config_dir / "config.json").write_text(json.dumps(config, indent=2) + "\n")
+    (config_dir / "openclaw.json").write_text(json.dumps(config, indent=2) + "\n")
 
-    # Write workspace files
+    # Write workspace files (SOUL.md + TOOLS.md)
     _write_workspace_files(workspace_dir, req)
 
     # Ensure network
     _ensure_network(client)
 
-    # Run container
+    # Run container — no explicit command, Dockerfile CMD handles startup
     container = client.containers.run(
-        PICOCLAW_IMAGE,
-        command="gateway",
+        OPENCLAW_IMAGE,
         name=name,
         detach=True,
         restart_policy={"Name": "unless-stopped"},
         network=NETWORK_NAME,
         volumes={
-            f"{HOST_DATA_DIR}/{name}/config/config.json": {
-                "bind": "/root/.picoclaw/config.json",
+            f"{HOST_DATA_DIR}/{name}/config/openclaw.json": {
+                "bind": "/home/node/.openclaw/openclaw.json",
                 "mode": "ro",
             },
             f"{HOST_DATA_DIR}/{name}/workspace": {
-                "bind": "/root/.picoclaw/workspace",
+                "bind": "/home/node/.openclaw/workspace",
                 "mode": "rw",
-            },
-            HOST_SKILLS_DIR: {
-                "bind": "/root/.picoclaw/workspace/skills",
-                "mode": "ro",
             },
         },
         environment={},

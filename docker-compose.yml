@@ -6,18 +6,19 @@ services:
       - "8100:8100"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${PICOCLAW_DATA_DIR:-/opt/picoclaw/data}:/opt/picoclaw/data
-      - ./skills:/opt/picoclaw/shared/skills:ro
+      - ${OPENCLAW_DATA_DIR:-/opt/openclaw/data}:/opt/openclaw/data
+      - ./skills:/opt/openclaw/shared/skills:ro
     environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
       - MANAGER_TOKEN=${MANAGER_TOKEN}
-      - HOST_DATA_DIR=${PICOCLAW_DATA_DIR:-/opt/picoclaw/data}
-      - HOST_SKILLS_DIR=${HOST_SKILLS_DIR:-/home/ec2-user/flyclawd/skills}
+      - OPENCLAW_IMAGE=${OPENCLAW_IMAGE:-openclaw:latest}
+      - HOST_DATA_DIR=${OPENCLAW_DATA_DIR:-/opt/openclaw/data}
     networks:
-      - picoclaw-net
+      - openclaw-net
 
 networks:
-  picoclaw-net:
-    name: picoclaw-net
+  openclaw-net:
+    name: openclaw-net
     driver: bridge
