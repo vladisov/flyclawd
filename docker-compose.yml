@@ -1,6 +1,6 @@
 services:
   manager:
-    image: flyclawd-manager:latest
+    build: ./manager
     restart: unless-stopped
     ports:
       - "8100:8100"
@@ -13,7 +13,7 @@ services:
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
       - MANAGER_TOKEN=${MANAGER_TOKEN}
-      - OPENCLAW_IMAGE=${OPENCLAW_IMAGE:-openclaw:latest}
+      - OPENCLAW_IMAGE=${OPENCLAW_IMAGE:-alpine/openclaw:latest}
       - HOST_DATA_DIR=${OPENCLAW_DATA_DIR:-/opt/openclaw/data}
     networks:
       - openclaw-net

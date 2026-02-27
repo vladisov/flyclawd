@@ -12,7 +12,7 @@ from pydantic import BaseModel
 app = FastAPI(title="OpenClaw Container Manager")
 logger = logging.getLogger(__name__)
 
-OPENCLAW_IMAGE = os.environ.get("OPENCLAW_IMAGE", "openclaw:latest")
+OPENCLAW_IMAGE = os.environ.get("OPENCLAW_IMAGE", "alpine/openclaw:latest")
 NETWORK_NAME = "openclaw-net"
 # Paths inside manager container (for reading/writing config)
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/opt/openclaw/data"))
