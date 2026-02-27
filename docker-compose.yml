@@ -1,6 +1,6 @@
 services:
   manager:
-    build: ./manager
+    image: flyclawd-manager:latest
     restart: unless-stopped
     ports:
       - "8100:8100"
