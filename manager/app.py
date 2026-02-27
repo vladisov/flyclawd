@@ -237,9 +237,8 @@ async def create_container(req: CreateContainerRequest):
             "ANTHROPIC_API_KEY": ANTHROPIC_API_KEY,
             "DEEPSEEK_API_KEY": DEEPSEEK_API_KEY,
             "GROQ_API_KEY": GROQ_API_KEY,
-            "NODE_OPTIONS": "--max-old-space-size=384",
         },
-        mem_limit="512m",
+        mem_limit="1g",
         labels={"managed-by": "flyclawd", "business-id": str(req.business_id)},
     )
 
