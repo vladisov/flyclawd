@@ -81,6 +81,7 @@ def _build_config(req: CreateContainerRequest) -> dict:
         "gateway": {
             "port": 18789,
             "bind": "lan",
+            "auth": {"token": MANAGER_TOKEN},
         },
         "agents": {
             "defaults": {
@@ -97,15 +98,10 @@ def _build_config(req: CreateContainerRequest) -> dict:
             "deny": ["write", "edit", "gateway"],
             "loopDetection": {
                 "enabled": True,
-                "warningThreshold": 3,
-                "criticalThreshold": 5,
-                "globalCircuitBreakerThreshold": 8,
+                "warningThreshold": 5,
+                "criticalThreshold": 10,
+                "globalCircuitBreakerThreshold": 15,
             },
-        },
-        "providers": {
-            "anthropic": {"apiKey": ANTHROPIC_API_KEY},
-            "deepseek": {"apiKey": DEEPSEEK_API_KEY},
-            "groq": {"apiKey": GROQ_API_KEY},
         },
         "channels": {
             "telegram": {
@@ -236,6 +232,11 @@ async def create_container(req: CreateContainerRequest):
                 "bind": "/home/node/.openclaw/workspace",
                 "mode": "rw",
             },
+        },
+        environment={
+            "ANTHROPIC_API_KEY": ANTHROPIC_API_KEY,
+            "DEEPSEEK_API_KEY": DEEPSEEK_API_KEY,
+            "GROQ_API_KEY": GROQ_API_KEY,
         },
         mem_limit="512m",
         labels={"managed-by": "flyclawd", "business-id": str(req.business_id)},
