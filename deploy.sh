@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OPENCLAW_REPO="${OPENCLAW_REPO_PATH:-../openclaw}"
+# Build openclaw image from a repo path (one-time / when updating)
+# Usage: ./deploy.sh --build-openclaw ~/openclaw
+if [[ "${1:-}" == "--build-openclaw" ]]; then
+    repo="${2:?Usage: ./deploy.sh --build-openclaw /path/to/openclaw}"
+    echo "==> Building openclaw image from $repo..."
+    docker build -t openclaw:latest "$repo"
+    shift 2
+fi
 
-echo "==> Building openclaw image..."
-docker build -t openclaw:latest "$OPENCLAW_REPO"
-
-echo "==> Building manager image..."
+echo "==> Building manager..."
 docker build -t flyclawd-manager:latest ./manager
 
 echo "==> Starting services..."
